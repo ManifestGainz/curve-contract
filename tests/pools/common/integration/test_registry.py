@@ -32,7 +32,7 @@ def test_amount_dy_underlying(registry, swap, send, recv, underlying_coins):
 
 
 @pytest.mark.itercoins("send", "recv")
-def test_exchange(bob, registry, wrapped_coins, wrapped_decimals, swap, send, recv):
+def test_exchange(bob, registry, wrapped_coins, wrapped_decimals, base_amount, swap, send, recv):
     send_token = wrapped_coins[send]
     recv_token = wrapped_coins[recv]
 
@@ -48,12 +48,12 @@ def test_exchange(bob, registry, wrapped_coins, wrapped_decimals, swap, send, re
     registry.exchange(swap, send_token, recv_token, amount, 0, {'from': bob, 'value': value})
 
     if send_token == ETH_ADDRESS:
-        assert bob.balance() == "999999 ether"
+        assert bob.balance() == (10**18 * base_amount) - 10**18
     else:
         assert send_token.balanceOf(bob) == 0
 
     if recv_token == ETH_ADDRESS:
-        assert (bob.balance() - "1000000 ether") / expected == pytest.approx(1)
+        assert (bob.balance() - (10**18 * base_amount)) / expected == pytest.approx(1)
     else:
         assert recv_token.balanceOf(bob) / expected == pytest.approx(1)
 
